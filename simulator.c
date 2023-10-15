@@ -37,9 +37,29 @@ int main(void) {
         if (mode == 1) {
             while (1) {
 
-                // Displays the items along with the code, name and price
-                printf("\nItems: {Code: Name - Price}\n1. %c - %.2f\n2. %c - %.2f\n3. %c - %.2f\n", name_a, price_a, name_b, price_b, name_c, price_c);
-    
+                // Displays the avaiable items along with the code, name and price
+                if (stock_a > 0 || stock_b > 0 || stock_c > 0) {
+
+                    printf("\nItems {Code: Name - Price}\n");
+
+                    // Iterates through a loop of all items where i is the item code
+                    for (int i = 1; i < 4; i++) {
+
+                        int item_stock = getStock(i);
+
+                        // Prints the items that are available
+                        if (item_stock > 0) {
+                            printf("%d: %c - %.2f\n", i, getName(i), getPrice(i));
+                        }
+                    }
+                }
+
+                // Exits from the loop if there are no available items
+                else {
+                    printf("\nSorry! No available items\n");
+                    break;
+                }
+
                 // Asks the user to input the item code of the item they would like to purchase
                 int item_code;
                 printf("\nEnter item code to purchase (1/2/3)\nPress 0 to cancel purchase: ");
@@ -166,11 +186,11 @@ int main(void) {
                     }
 
                     // Displays the menu of operations
-                    printf("\nMenu:\n1. Replenish Items\n2. Change Item Prices\n3. Display Total Sale\n4. Display Item Availability\n5. Exit Admin Mode\n");
+                    printf("\nMenu:\n1. Replenish Items\n2. Change Item Prices\n3. Display Total Sale\n4. Display Item Availability\n0. Exit Admin Mode\n");
 
                     // Gets the preferred mode of admin
                     int adm_mode;
-                    printf("\nEnter the mode (1/2/3/4/5): ");
+                    printf("\nEnter the mode (1/2/3/4/0): ");
                     scanf("%d", &adm_mode);
 
                     // Gives the admin the option to re-stock an item
@@ -279,7 +299,8 @@ int main(void) {
                         printf("\nAvailable Items: {Name - Stock}\n%c - %d\n%c - %d\n%c - %d\n", name_a, stock_a, name_b, stock_b, name_c, stock_c);
                     }
 
-                    else if (adm_mode == 5) {
+                    // Breaks the loop and returns to the main menu
+                    else if (adm_mode == 0) {
                         break;
                     }
 
