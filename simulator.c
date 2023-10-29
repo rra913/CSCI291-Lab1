@@ -2,8 +2,8 @@
 #include <stdlib.h> // Function used from the library: rand()
 
 // Setting global variables for the stock, price and name for each item
-int stock_a, stock_b, stock_c;
-float price_a, price_b, price_c;
+int stock_a = 5, stock_b = 5, stock_c = 5;
+float price_a = 2, price_b = 1, price_c = 1.5;
 char name_a = 'A', name_b = 'B', name_c = 'C';
 
 // Setting a global variable to store the total sales
@@ -13,7 +13,7 @@ float total_amount;
 #define PASSWORD 123456
 
 // Defining a constant 'Min' that notifies the admin if the stock of an item is less than or equal to Min
-#define Min 4
+#define Min 1
 
 // Creating functions to return the name, stock and price of an item based on the item code
 char getName(int itemCode);
@@ -38,7 +38,7 @@ int main(void) {
             while (1) {
 
                 // Displays the avaiable items along with the code, name and price
-                if (stock_a > 0 || stock_b > 0 || stock_c > 0) {
+                if (stock_a > Min || stock_b > Min || stock_c > Min) {
 
                     printf("\nItems {Code: Name - Price}\n");
 
@@ -64,33 +64,33 @@ int main(void) {
                 int item_code;
                 printf("\nEnter item code to purchase (1/2/3)\nPress 0 to cancel purchase: ");
                 scanf("%d", &item_code);
-               
+
                 // Breaks the loop if the user inputs 0
                 if (item_code == 0) {
                     printf("\nPurchase Cancelled.\n");
                     break;
                 }
-                
+
                 // Creates a variable to store the selected name, price and stock of the item
                 float item_price = getPrice(item_code);
                 char item_name = getName(item_code);
                 int item_stock = getStock(item_code);
-                
+
                 // Notifies the user if the code is invalid and returns to the beginning of the loop
                 if (item_price == -1 || item_name == -1 || item_stock == -1) {
                     printf("Invalid Code\n");
                     continue;
                 }
-            
+
                 // Checks if the item is in stock. Returns to the loop if the item is unavailable
-                if (item_stock == 0) {
+                if (item_stock <= Min) {
                     printf("\nItem Unavailable.\nPlease select another item.\n");
                     continue;
                 }
-            
+
                 // Prints the selected item name and price
                 printf("\nItem Selected:\nName: %c  Price: %.2f\n", item_name, item_price);
-            
+
                 // Breaks the loop if user chooses to cancel the purchase
                 int confirm_pur;
                 printf("\nPress 0 to cancel purchase\nPress any number to continue purchase: ");
@@ -98,7 +98,7 @@ int main(void) {
                 if (confirm_pur == 0) {
                    break;
                 }
-                
+
                 // Prompts user to input coins till the item is paid
                 float coin_insert;
                 float payment = 0;
@@ -209,20 +209,54 @@ int main(void) {
                             printf("Invalid Code\n");
                             continue;
                         }
-                        
-                        // Generates a random number from 1 to 20
-                        int new_stock = (rand() % 20) + 1;
+
+                        // Defining a new variable to store the stock of the chosen item
+                        int item_stock;
 
                         // Replenishes the stock of the selected item by the random number
                         switch(item_code) {
                             case (1):
-                                stock_a = new_stock;
+                                item_stock = stock_a;
                                 break;
                             case (2):
-                                stock_b = new_stock;
+                                item_stock = stock_b;
                                 break;
                             case (3):
-                                stock_c = new_stock;
+                                item_stock = stock_c;
+                                break;
+                        }
+
+                        // Skips the command if the item is at full capacity
+                        if (item_stock >= 20) {
+                            printf("\nItem is at maximum capacity.\n");
+                            continue;
+                        }
+
+                        // Replenishes the item
+                        int new_stock;
+
+                        // Loop ensures that the stock of the item does not exceed the maximum capacity
+                        while (item_stock <= 20) {
+                            new_stock = (rand() % 20) + 1;
+                            if (item_stock+new_stock > 20) {
+                                continue;
+                            }
+                            else {
+                                item_stock += new_stock;
+                                break;
+                            }
+                        }
+
+                        // Updates the stock of the item
+                        switch(item_code) {
+                            case (1):
+                                stock_a = item_stock;
+                                break;
+                            case (2):
+                                stock_b = item_stock;
+                                break;
+                            case (3):
+                                stock_c = item_stock;
                                 break;
                         }
 
@@ -232,10 +266,10 @@ int main(void) {
 
                     // Gives the admin the option to change the price of an item
                     else if (adm_mode == 2) {
-                        
+
                         // Displays the items and its price
                         printf("\nItems: {Code: Name - Price}\n1: %c - %.2f\n2: %c - %.2f\n3: %c - %.2f\n", name_a, price_a, name_b, price_b, name_c, price_c);
-                        
+
                         // Asks the admin to input the code of the item
                         int item_code;
                         printf("\nEnter code of the item you would like to change its price: ");
@@ -254,6 +288,12 @@ int main(void) {
                         float new_amount;
                         printf("\nEnter the new price for the item: ");
                         scanf("%f", &new_amount);
+
+                        // Exits the funciton if the input price is invalid
+                        if (new_amount < 0) {
+                            printf("Invalid Price.\n");
+                            continue;
+                        }
 
                         // Updates the price of the selected item
                         switch (item_code) {
@@ -308,13 +348,13 @@ int main(void) {
                         printf("Invalid Input.\n");
                     }
                 }
-            } 
-            
+            }
+
             else {
                 // Notifies the user if the password is incorrect and exits the program
                 printf("Invalid Password\n");
                 break;
-            } 
+            }
         }
 
         // Exits the program
@@ -325,8 +365,9 @@ int main(void) {
         // Informs the user if the input is invalid
         else {
             printf("\nInvalid Input\n");
-        } 
-    } 
+        }
+    }
+    return 0;
 }
 
 // Returns the name of the item based on the item code. Returns -1 if the code is invalid
